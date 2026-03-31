@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QA Practice App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 data-testid="app-title">QA Practice App</h1>
+      <div class="header-actions">
+        <button id="theme-toggle" data-testid="theme-toggle">Toggle Theme</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card" aria-labelledby="auth-title">
+        <h2 id="auth-title">Authentication</h2>
+        <form id="login-form" novalidate>
+          <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="tester@example.com" data-testid="email-input" />
+            <small class="error" id="email-error" aria-live="polite"></small>
+          </div>
+          <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="At least 8 characters" data-testid="password-input" />
+            <small class="error" id="password-error" aria-live="polite"></small>
+          </div>
+          <div class="inline-row">
+            <label>
+              <input type="checkbox" id="remember-me" data-testid="remember-checkbox" /> Remember me
+            </label>
+            <button type="submit" data-testid="login-btn">Log in</button>
+          </div>
+          <p id="login-status" class="status" aria-live="polite" data-testid="login-status"></p>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="todo-title">
+        <h2 id="todo-title">Task Board (CRUD)</h2>
+        <form id="task-form">
+          <input id="task-input" type="text" placeholder="Add a task" maxlength="120" data-testid="task-input" />
+          <button type="submit" data-testid="add-task-btn">Add</button>
+        </form>
+        <ul id="task-list" data-testid="task-list"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="api-title">
+        <h2 id="api-title">Fake API Panel</h2>
+        <div class="inline-row">
+          <button id="fetch-users" data-testid="fetch-users-btn">Fetch users</button>
+          <button id="reset-api" data-testid="reset-api-btn">Reset</button>
+        </div>
+        <p id="api-status" class="status" aria-live="polite" data-testid="api-status"></p>
+        <table aria-label="Users table" data-testid="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody id="users-body"></tbody>
+        </table>
+      </section>
+
+      <section class="card" aria-labelledby="catalog-title">
+        <h2 id="catalog-title">Catalog (Filter + Sort + Pagination)</h2>
+        <div class="toolbar">
+          <input id="search-input" type="search" placeholder="Search product" data-testid="search-input" />
+          <select id="category-filter" data-testid="category-filter">
+            <option value="all">All categories</option>
+            <option value="web">Web</option>
+            <option value="mobile">Mobile</option>
+            <option value="api">API</option>
+          </select>
+          <button id="sort-price" data-order="asc" data-testid="sort-price-btn">Sort price ↑</button>
+        </div>
+        <div id="catalog-grid" class="catalog-grid" data-testid="catalog-grid"></div>
+        <div class="inline-row">
+          <button id="prev-page" data-testid="prev-page-btn">Prev</button>
+          <span id="page-indicator" data-testid="page-indicator"></span>
+          <button id="next-page" data-testid="next-page-btn">Next</button>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" role="status" aria-live="polite" class="toast" data-testid="toast"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
