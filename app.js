@@ -2,6 +2,19 @@ const storageKeys = {
   theme: 'qa-practice-theme',
   tasks: 'qa-practice-tasks',
   rememberEmail: 'qa-practice-email',
+  controls: 'qa-practice-controls',
+};
+
+const defaultControls = {
+  environment: 'staging',
+  priority: 'low',
+  channels: ['email'],
+  releaseDate: '',
+  accentColor: '#4f46e5',
+  coverage: 65,
+  notes: '',
+  browsers: [],
+  fileName: '',
 };
 
 const state = {
@@ -19,6 +32,7 @@ const state = {
   page: 1,
   pageSize: 3,
   sortOrder: 'asc',
+  controls: { ...defaultControls },
 };
 
 const el = {
@@ -45,6 +59,29 @@ const el = {
   prev: document.getElementById('prev-page'),
   next: document.getElementById('next-page'),
   indicator: document.getElementById('page-indicator'),
+  controlsForm: document.getElementById('controls-form'),
+  environment: document.getElementById('environment-select'),
+  priorityOptions: document.querySelectorAll('input[name="priority"]'),
+  channelOptions: document.querySelectorAll('input[name="channel"]'),
+  releaseDate: document.getElementById('release-date'),
+  accentColor: document.getElementById('theme-color'),
+  coverageRange: document.getElementById('coverage-range'),
+  coverageValue: document.getElementById('coverage-value'),
+  notes: document.getElementById('notes-input'),
+  notesCount: document.getElementById('notes-count'),
+  browsers: document.getElementById('browser-select'),
+  evidenceFile: document.getElementById('evidence-file'),
+  fileSummary: document.getElementById('file-summary'),
+  resetControls: document.getElementById('reset-controls'),
+  controlsStatus: document.getElementById('controls-status'),
+  coverageProgress: document.getElementById('coverage-progress'),
+  summaryEnvironment: document.getElementById('summary-environment'),
+  summaryPriority: document.getElementById('summary-priority'),
+  summaryChannels: document.getElementById('summary-channels'),
+  summaryRelease: document.getElementById('summary-release'),
+  summaryBrowsers: document.getElementById('summary-browsers'),
+  summaryColor: document.getElementById('summary-color'),
+  colorPreview: document.getElementById('color-preview'),
 };
 
 function showToast(message) {
@@ -55,6 +92,10 @@ function showToast(message) {
 
 function saveTasks() {
   localStorage.setItem(storageKeys.tasks, JSON.stringify(state.tasks));
+}
+
+function saveControls() {
+  localStorage.setItem(storageKeys.controls, JSON.stringify(state.controls));
 }
 
 function renderTasks() {
@@ -233,6 +274,69 @@ function renderCatalog() {
   el.next.disabled = state.page >= totalPages;
 }
 
+function syncControlsForm() {
+  el.environment.value = state.controls.environment;
+  el.priorityOptions.forEach((option) => {
+    option.checked = option.value === state.controls.priority;
+  });
+  el.channelOptions.forEach((option) => {
+    option.checked = state.controls.channels.includes(option.value);
+  });
+  el.releaseDate.value = state.controls.releaseDate;
+  el.accentColor.value = state.controls.accentColor;
+  el.coverageRange.value = state.controls.coverage;
+  el.notes.value = state.controls.notes;
+  Array.from(el.browsers.options).forEach((option) => {
+    option.selected = state.controls.browsers.includes(option.value);
+  });
+  el.fileSummary.textContent = state.controls.fileName || 'No file selected';
+}
+
+function renderControls() {
+  el.coverageValue.textContent = `${state.controls.coverage}%`;
+  el.coverageProgress.value = state.controls.coverage;
+  el.notesCount.textContent = `${state.controls.notes.length} / 200`;
+  el.summaryEnvironment.textContent = state.controls.environment;
+  el.summaryPriority.textContent = state.controls.priority;
+  el.summaryChannels.textContent = state.controls.channels.join(', ') || 'None selected';
+  el.summaryRelease.textContent = state.controls.releaseDate || 'Not set';
+  el.summaryBrowsers.textContent = state.controls.browsers.join(', ') || 'None selected';
+  el.summaryColor.textContent = state.controls.accentColor;
+  el.colorPreview.style.backgroundColor = state.controls.accentColor;
+}
+
+function readControlsForm() {
+  return {
+    environment: el.environment.value,
+    priority: document.querySelector('input[name="priority"]:checked')?.value || defaultControls.priority,
+    channels: Array.from(el.channelOptions)
+      .filter((option) => option.checked)
+      .map((option) => option.value),
+    releaseDate: el.releaseDate.value,
+    accentColor: el.accentColor.value,
+    coverage: Number(el.coverageRange.value),
+    notes: el.notes.value,
+    browsers: Array.from(el.browsers.selectedOptions).map((option) => option.value),
+    fileName: el.evidenceFile.files[0]?.name || state.controls.fileName,
+  };
+}
+
+function applyControls(nextControls, options = {}) {
+  state.controls = {
+    ...defaultControls,
+    ...nextControls,
+    channels: nextControls.channels?.length ? nextControls.channels : [],
+    browsers: nextControls.browsers?.length ? nextControls.browsers : [],
+  };
+
+  syncControlsForm();
+  renderControls();
+
+  if (options.persist) {
+    saveControls();
+  }
+}
+
 function applyTheme(theme) {
   document.body.classList.toggle('dark', theme === 'dark');
   localStorage.setItem(storageKeys.theme, theme);
@@ -252,6 +356,17 @@ function setup() {
   if (rememberedEmail) {
     el.email.value = rememberedEmail;
     el.rememberMe.checked = true;
+  }
+
+  const savedControls = localStorage.getItem(storageKeys.controls);
+  if (savedControls) {
+    try {
+      applyControls(JSON.parse(savedControls));
+    } catch {
+      applyControls(defaultControls);
+    }
+  } else {
+    applyControls(defaultControls);
   }
 
   el.themeToggle.addEventListener('click', () => {
@@ -306,6 +421,41 @@ function setup() {
   el.next.addEventListener('click', () => {
     state.page += 1;
     renderCatalog();
+  });
+
+  el.coverageRange.addEventListener('input', () => {
+    state.controls.coverage = Number(el.coverageRange.value);
+    renderControls();
+  });
+
+  el.notes.addEventListener('input', () => {
+    state.controls.notes = el.notes.value;
+    renderControls();
+  });
+
+  el.accentColor.addEventListener('input', () => {
+    state.controls.accentColor = el.accentColor.value;
+    renderControls();
+  });
+
+  el.evidenceFile.addEventListener('change', () => {
+    state.controls.fileName = el.evidenceFile.files[0]?.name || '';
+    el.fileSummary.textContent = state.controls.fileName || 'No file selected';
+  });
+
+  el.controlsForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    applyControls(readControlsForm(), { persist: true });
+    el.controlsStatus.textContent = 'Control settings saved';
+    showToast('Controls saved');
+  });
+
+  el.resetControls.addEventListener('click', () => {
+    el.controlsForm.reset();
+    el.evidenceFile.value = '';
+    el.controlsStatus.textContent = 'Controls reset to defaults';
+    applyControls(defaultControls, { persist: true });
+    showToast('Controls reset');
   });
 
   renderCatalog();

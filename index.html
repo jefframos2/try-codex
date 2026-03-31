@@ -89,6 +89,108 @@
           <button id="next-page" data-testid="next-page-btn">Next</button>
         </div>
       </section>
+
+      <section class="card" aria-labelledby="controls-title">
+        <h2 id="controls-title">Controls Lab</h2>
+        <form id="controls-form" class="stack-md">
+          <div class="form-row">
+            <label for="environment-select">Environment</label>
+            <select id="environment-select" data-testid="environment-select">
+              <option value="staging">Staging</option>
+              <option value="production">Production</option>
+              <option value="sandbox">Sandbox</option>
+            </select>
+          </div>
+
+          <fieldset class="group" data-testid="priority-group">
+            <legend>Priority</legend>
+            <label><input type="radio" name="priority" value="low" checked data-testid="priority-low" /> Low</label>
+            <label><input type="radio" name="priority" value="medium" data-testid="priority-medium" /> Medium</label>
+            <label><input type="radio" name="priority" value="high" data-testid="priority-high" /> High</label>
+          </fieldset>
+
+          <fieldset class="group" data-testid="channels-group">
+            <legend>Notification Channels</legend>
+            <label><input type="checkbox" name="channel" value="email" checked data-testid="channel-email" /> Email</label>
+            <label><input type="checkbox" name="channel" value="sms" data-testid="channel-sms" /> SMS</label>
+            <label><input type="checkbox" name="channel" value="push" data-testid="channel-push" /> Push</label>
+          </fieldset>
+
+          <div class="form-row">
+            <label for="release-date">Release Date</label>
+            <input id="release-date" type="date" data-testid="release-date-input" />
+          </div>
+
+          <div class="form-row">
+            <label for="theme-color">Accent Color</label>
+            <input id="theme-color" type="color" value="#4f46e5" data-testid="accent-color-input" />
+          </div>
+
+          <div class="form-row">
+            <label for="coverage-range">Coverage Target: <span id="coverage-value" data-testid="coverage-value">65%</span></label>
+            <input id="coverage-range" type="range" min="0" max="100" step="5" value="65" data-testid="coverage-range" />
+          </div>
+
+          <div class="form-row">
+            <label for="notes-input">Notes</label>
+            <textarea id="notes-input" rows="3" maxlength="200" placeholder="Add notes for the test run" data-testid="notes-input"></textarea>
+            <small class="helper" id="notes-count" data-testid="notes-count">0 / 200</small>
+          </div>
+
+          <div class="form-row">
+            <label for="browser-select">Browsers</label>
+            <select id="browser-select" multiple size="4" data-testid="browser-select">
+              <option value="chrome">Chrome</option>
+              <option value="firefox">Firefox</option>
+              <option value="safari">Safari</option>
+              <option value="edge">Edge</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label for="evidence-file">Evidence Attachment</label>
+            <input id="evidence-file" type="file" accept=".png,.jpg,.pdf,.txt" data-testid="evidence-file-input" />
+            <small class="helper" id="file-summary" data-testid="file-summary">No file selected</small>
+          </div>
+
+          <div class="inline-row">
+            <button type="submit" data-testid="save-controls-btn">Save Settings</button>
+            <button type="button" id="reset-controls" class="ghost-btn" data-testid="reset-controls-btn">Reset Controls</button>
+          </div>
+        </form>
+
+        <div class="control-results" data-testid="control-results">
+          <p id="controls-status" class="status" aria-live="polite" data-testid="controls-status"></p>
+          <progress id="coverage-progress" max="100" value="65" data-testid="coverage-progress"></progress>
+          <dl class="summary-grid">
+            <div>
+              <dt>Environment</dt>
+              <dd id="summary-environment" data-testid="summary-environment">staging</dd>
+            </div>
+            <div>
+              <dt>Priority</dt>
+              <dd id="summary-priority" data-testid="summary-priority">low</dd>
+            </div>
+            <div>
+              <dt>Channels</dt>
+              <dd id="summary-channels" data-testid="summary-channels">email</dd>
+            </div>
+            <div>
+              <dt>Release</dt>
+              <dd id="summary-release" data-testid="summary-release">Not set</dd>
+            </div>
+            <div>
+              <dt>Browsers</dt>
+              <dd id="summary-browsers" data-testid="summary-browsers">None selected</dd>
+            </div>
+            <div>
+              <dt>Color</dt>
+              <dd id="summary-color" data-testid="summary-color">#4f46e5</dd>
+            </div>
+          </dl>
+          <div class="color-preview" id="color-preview" data-testid="color-preview"></div>
+        </div>
+      </section>
     </main>
 
     <div id="toast" role="status" aria-live="polite" class="toast" data-testid="toast"></div>
